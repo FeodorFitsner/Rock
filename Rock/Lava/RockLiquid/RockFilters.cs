@@ -33,9 +33,8 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI.HtmlControls;
 
-using Ical.Net;
 using Ical.Net.DataTypes;
-using Calendar = Ical.Net.Calendar;
+
 using DotLiquid;
 using DotLiquid.Util;
 using Context = DotLiquid.Context;
@@ -43,11 +42,8 @@ using Condition = DotLiquid.Condition;
 
 using Humanizer;
 using Humanizer.Localisation;
-
 using ImageResizer;
-
 using Newtonsoft.Json;
-
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
@@ -57,7 +53,6 @@ using Rock.Security;
 using Rock.Utility;
 using Rock.Web.Cache;
 using Rock.Web.UI;
-
 using UAParser;
 
 namespace Rock.Lava
@@ -443,7 +438,7 @@ namespace Rock.Lava
         {
             return input == null
                 ? input
-                : input.Titleize();
+                : input.ApplyCase( LetterCasing.Title );
         }
 
         /// <summary>
@@ -1353,17 +1348,16 @@ namespace Rock.Lava
         /// <returns>a list of datetimes</returns>
         private static List<DateTime> GetOccurrenceDates( string iCalString, int returnCount, bool useEndDateTime = false )
         {
-            var calendar = Calendar.LoadFromStream( new StringReader( iCalString ) ).First() as Calendar;
-            var calendarEvent = calendar.Events[0] as Event;
-
+            var calendarEvent = InetCalendarHelper.CreateCalendarEvent( iCalString );
+            
             if ( !useEndDateTime && calendarEvent.DtStart != null )
             {
-                List<Occurrence> dates = calendar.GetOccurrences( RockDateTime.Now, RockDateTime.Now.AddYears( 1 ) ).Take( returnCount ).ToList();
+                List<Occurrence> dates = InetCalendarHelper.GetOccurrences( iCalString, RockDateTime.Now, RockDateTime.Now.AddYears( 1 ) ).Take( returnCount ).ToList();
                 return dates.Select( d => d.Period.StartTime.Value ).ToList();
             }
             else if ( useEndDateTime && calendarEvent.DtEnd != null )
             {
-                List<Occurrence> dates = calendar.GetOccurrences( RockDateTime.Now, RockDateTime.Now.AddYears( 1 ) ).Take( returnCount ).ToList();
+                List<Occurrence> dates = InetCalendarHelper.GetOccurrences( iCalString, RockDateTime.Now, RockDateTime.Now.AddYears( 1 ) ).Take( returnCount ).ToList();
                 return dates.Select( d => d.Period.EndTime.Value ).ToList();
             }
             else
@@ -1984,7 +1978,7 @@ namespace Rock.Lava
             }
         }
         /// <summary>
-        /// Formats the specified input as currency using the CurrencySymbol from Global Attributes
+        /// Formats the specified input as currency using the Currency Code information from Global Attributes
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
@@ -1995,18 +1989,21 @@ namespace Rock.Lava
                 return null;
             }
 
-            if ( input is string )
-            {
-                // if the input is a string, just append the currency symbol to the front, even if it can't be converted to a number
-                var currencySymbol = GlobalAttributesCache.Value( "CurrencySymbol" );
-                return string.Format( "{0}{1}", currencySymbol, input );
-            }
-            else
+            var inputAsDecimal = input.ToString().AsDecimalOrNull();
+            if(inputAsDecimal != null )
             {
                 // if the input an integer, decimal, double or anything else that can be parsed as a decimal, format that
-                decimal? inputAsDecimal = input.ToString().AsDecimalOrNull();
                 return inputAsDecimal.FormatAsCurrency();
             }
+
+            // if the input is a string, just append the currency symbol to the front, even if it can't be converted to a number
+            var currencyInfo = new RockCurrencyCodeInfo();
+            if ( currencyInfo.SymbolLocation.Equals( "left", StringComparison.OrdinalIgnoreCase ) )
+            {
+                return string.Format( "{0}{1}", currencyInfo.Symbol, input );
+            }
+
+            return string.Format( "{1}{0}", currencyInfo.Symbol, input );
         }
 
         /// <summary>
@@ -2946,14 +2943,14 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Families the salutation.
+        /// Return's the FamilySalutation for the specified Person
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="input">The input.</param>
         /// <param name="includeChildren">if set to <c>true</c> [include children].</param>
         /// <param name="includeInactive">if set to <c>true</c> [include inactive].</param>
         /// <param name="useFormalNames">if set to <c>true</c> [use formal names].</param>
-        /// <param name="finalfinalSeparator">The finalfinal separator.</param>
+        /// <param name="finalfinalSeparator">The final separator.</param>
         /// <param name="separator">The separator.</param>
         /// <returns></returns>
         public static string FamilySalutation( Context context, object input, bool includeChildren = false, bool includeInactive = true, bool useFormalNames = false, string finalfinalSeparator = "&", string separator = "," )
@@ -2965,7 +2962,36 @@ namespace Rock.Lava
                 return null;
             }
 
-            return Person.GetFamilySalutation( person, includeChildren, includeInactive, useFormalNames, finalfinalSeparator, separator );
+            string familySalutation = string.Empty;
+
+            if ( includeInactive == false && useFormalNames == false && finalfinalSeparator == "&" && separator == "," && person.PrimaryFamilyId.HasValue )
+            {
+                // if default parameters are specified, we can get the family salutation from the GroupSalutionField of the person's PrimaryFamily
+                if ( includeChildren )
+                {
+                    familySalutation = person.PrimaryFamily?.GroupSalutationFull;
+                }
+                else
+                {
+                    familySalutation = person.PrimaryFamily?.GroupSalutation;
+                }
+            }
+
+            if ( familySalutation.IsNotNullOrWhiteSpace())
+            {
+                return familySalutation;
+            }
+
+            // if non-default parameters are specified, we'll have to calculate
+            var args = new Person.CalculateFamilySalutationArgs( includeChildren )
+            {
+                IncludeInactive = includeInactive,
+                UseFormalNames = useFormalNames,
+                FinalSeparator = finalfinalSeparator,
+                Separator = separator
+            };
+
+            return Person.CalculateFamilySalutation( person, args );
         }
 
         /// <summary>
@@ -5289,13 +5315,45 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Wheres the specified input.
+        /// Filters a collection of items by applying the specified Linq predicate.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="filter">The filter.</param>
+        /// <returns></returns>
+        public static object Where( object input, string filter )
+        {
+            if ( input is IEnumerable )
+            {
+                var enumerableInput = ( IEnumerable ) input;
+                return enumerableInput.Where( filter );
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Filters a collection of items on a specified property and value with an equal comparison Type.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="filterKey">The filter key.</param>
         /// <param name="filterValue">The filter value.</param>
         /// <returns></returns>
+        [Obsolete("Use the override that specifies the comparisonType.")]
+        [RockObsolete("1.13")]
         public static object Where( object input, string filterKey, object filterValue )
+        {
+            return Where( input, filterKey, filterValue, "equal" );
+        }
+
+        /// <summary>
+        /// Filters a collection of items on a specified property and value.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="filterKey">The filter key.</param>
+        /// <param name="filterValue">The filter value.</param>
+        /// <param name="comparisonType">The type of comparison for the filter value, either "equal" (default) or "notequal".</param>
+        /// <returns></returns>
+        public static object Where( object input, string filterKey, object filterValue, string comparisonType )
         {
             if ( input == null )
             {
@@ -5306,24 +5364,45 @@ namespace Rock.Lava
             {
                 var result = new List<object>();
 
-                foreach ( var value in ( (IEnumerable)input ) )
+                foreach ( var value in ( ( IEnumerable )input ) )
                 {
                     if ( value is ILiquidizable )
                     {
                         var liquidObject = value as ILiquidizable;
                         var condition = Condition.Operators["=="];
 
-                        if ( liquidObject.ContainsKey( filterKey ) && condition( liquidObject[filterKey], filterValue ) )
+                        if ( liquidObject.ContainsKey( filterKey )
+                                && ( ( condition( liquidObject[filterKey], filterValue ) && comparisonType == "equal" )
+                                     || ( !condition( liquidObject[filterKey], filterValue ) && comparisonType == "notequal" ) ) )
                         {
                             result.Add( liquidObject );
                         }
+
                     }
                     else if ( value is IDictionary<string, object> )
                     {
                         var dictionaryObject = value as IDictionary<string, object>;
-                        if ( dictionaryObject.ContainsKey( filterKey ) && (dynamic)dictionaryObject[filterKey] == (dynamic)filterValue )
+                        if ( dictionaryObject.ContainsKey( filterKey )
+                                 && ( ( dynamic ) dictionaryObject[filterKey] == ( dynamic ) filterValue && comparisonType == "equal"
+                                        || ( ( dynamic ) dictionaryObject[filterKey] != ( dynamic ) filterValue && comparisonType == "notequal" ) ) )
                         {
                             result.Add( dictionaryObject );
+                        }
+                    }
+                    else if ( value is object )
+                    {
+                        var propertyValue = value.GetPropertyValue( filterKey );
+
+                        // Allow for null checking as an empty string. Could be differing opinions on this...?!
+                        if ( propertyValue.IsNull() )
+                        {
+                            propertyValue = string.Empty;
+                        }
+
+                        if ( ( propertyValue.Equals( filterValue ) && comparisonType == "equal" )
+                                || ( !propertyValue.Equals( filterValue ) && comparisonType == "notequal" ) )
+                        {
+                            result.Add( value );
                         }
                     }
                 }
@@ -5793,6 +5872,7 @@ namespace Rock.Lava
                 var followed = new FollowingService( rockContext ).Queryable()
                     .Where( f => f.EntityTypeId == followingEntityTypeId && f.EntityId == entity.Id )
                     .Where( f => f.PersonAlias.PersonId == person.Id )
+                    .Where( f => string.IsNullOrEmpty( f.PurposeKey ) )
                     .Any();
 
                 return followed;

@@ -57,8 +57,6 @@ Items:
             shortcodeDefinition.Name = "shortcodetest";
             shortcodeDefinition.Parameters = new Dictionary<string, string> { { "parameter1", "value1" }, { "parameter2", "value2" } };
 
-            TestHelper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
-
             var input = @"
 {[ shortcodetest ]}
 
@@ -88,18 +86,17 @@ Panel 3 - Panel 3 content.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
+            TestHelper.AssertAction( ( engine ) =>
+            {
+                engine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
+
+                TestHelper.AssertTemplateOutput( engine.EngineType, expectedOutput, input );
+            } );
         }
 
         [TestMethod]
         public void ShortcodeBlock_WithEntityCommandEnabledAndEmbeddedEntityCommand_EmitsCorrectHtml()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
-            {
-                Debug.Print( "This test is not implemented for the RockLiquid Lava Engine." );
-                return;
-            }
-
             var shortcodeTemplate = @"
 {% for item in items %}
 <Item>
@@ -116,8 +113,6 @@ Panel 3 - Panel 3 content.
             shortcodeDefinition.Name = "shortcodetest";
             shortcodeDefinition.Parameters = new Dictionary<string, string> { { "title", "(unnamed)" } };
             shortcodeDefinition.EnabledLavaCommands = new List<string> { "RockEntity" };
-
-            TestHelper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
 
             var input = @"
 {[ shortcodetest ]}
@@ -145,18 +140,24 @@ Potty Trained --- Id: 141 - Guid: e6905502-4c23-4879-a60f-8c4ceb3ee2e9
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
+            TestHelper.AssertAction( ( engine ) =>
+            {
+                if ( engine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
+                {
+                    TestHelper.DebugWriteRenderResult( engine.EngineType, "(Not Implemented)", "(Not Implemented)" );
+                    return;
+                }
+
+                engine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
+
+                TestHelper.AssertTemplateOutput( engine.EngineType, expectedOutput, input );
+            } );
+
         }
 
         [TestMethod]
         public void ShortcodeBlock_WithParameters_CanResolveParameters()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
-            {
-                Debug.Print( "This test is not implemented for the RockLiquid Lava Engine." );
-                return;
-            }
-
             var shortcodeTemplate = @"
 Font Name: {{ fontname }}
 Font Size: {{ fontsize }}
@@ -171,8 +172,6 @@ Font Bold: {{ fontbold }}
             shortcodeDefinition.Name = "shortcodetest";
             shortcodeDefinition.Parameters = new Dictionary<string, string> { { "speed", "10" } };
 
-            TestHelper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
-
             var input = @"
 {[ shortcodetest fontname:'Arial' fontsize:'14' fontbold:'true' ]}
 {[ endshortcodetest ]}
@@ -186,7 +185,18 @@ Font Bold: true
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
+            TestHelper.AssertAction( ( engine ) =>
+            {
+                if ( engine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
+                {
+                    TestHelper.DebugWriteRenderResult( engine.EngineType, "(Not Implemented)", "(Not Implemented)" );
+                    return;
+                }
+
+                engine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
+
+                TestHelper.AssertTemplateOutput( engine.EngineType, expectedOutput, input );
+            } );
         }
 
         #region Accordion
@@ -213,15 +223,11 @@ Font Bold: {{ fontbold }}
             shortcode1.TemplateMarkup = shortcodeTemplate;
             shortcode1.Name = "shortcodetest1";
 
-            TestHelper.LavaEngine.RegisterDynamicShortcode( shortcode1.Name, ( shortcodeName ) => { return shortcode1; } );
-
             var shortcode2 = new DynamicShortcodeDefinition();
 
             shortcode2.ElementType = LavaShortcodeTypeSpecifier.Block;
             shortcode2.TemplateMarkup = shortcodeTemplate;
             shortcode2.Name = "shortcodetest2";
-
-            TestHelper.LavaEngine.RegisterDynamicShortcode( shortcode2.Name, ( shortcodeName ) => { return shortcode2; } );
 
             var input = @"
 {[ shortcodetest1 fontname:'Arial' fontsize:'14' fontbold:'true' ]}
@@ -236,10 +242,17 @@ Font Bold: true
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
+            TestHelper.AssertAction( ( engine ) =>
+            {
+                engine.RegisterDynamicShortcode( shortcode1.Name, ( shortcodeName ) => { return shortcode1; } );
+                engine.RegisterDynamicShortcode( shortcode2.Name, ( shortcodeName ) => { return shortcode2; } );
 
-            var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 30 };
+                TestHelper.AssertTemplateOutput( engine.EngineType, expectedOutput, input );
 
-            Parallel.For( 0, 1000, parallelOptions, ( x ) => TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true ) );
+                var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 30 };
+
+                Parallel.For( 0, 1000, parallelOptions, ( x ) => TestHelper.AssertTemplateOutput( engine.EngineType, expectedOutput, input ) );
+            } );
         }
 
         [TestMethod]
@@ -321,7 +334,9 @@ Font Bold: true
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -400,7 +415,9 @@ var chart = new Chart(ctx, {
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -414,7 +431,6 @@ var chart = new Chart(ctx, {
 {[ easypie value:'25' scalelinelength:'0' chartwidth:'50' ]} {[ endeasypie ]}
 ";
 
-            // TODO: The second script tag does not render
             var expectedOutput = @"
 <script src='https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js' type='text/javascript'></script>
 
@@ -495,12 +511,26 @@ $( document ).ready(function() {
 }
 </style>
 
+<div class=``easy-pie-chart id-<<guid>>  js-easy-pie-chart`` data-percent=``25`` data-piesize=``50`` data-scalelinelength=``0`` data-scalecolor=#dfe0e0 data-trackwidth=``6`` data-linecap=``butt`` data-animateduration=``1500`` style=``color:#ee7625``>
+  <div class=``easy-pie-contents id-<<guid>>-contents``>
+      <style>
+      .id-<<guid>>-contents > img {
+          border-radius: 50%;
+          max-width: 26px;
+      }
+      </style>
+      
+<span class=``chart-label small`` ></span>
+
+  </div>
+</div>
 ";
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
 
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -621,7 +651,9 @@ $( document ).ready(function() {
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -742,7 +774,9 @@ $( document ).ready(function() {
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -777,7 +811,7 @@ This is a super simple panel.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input );
         }
 
         #endregion
@@ -836,8 +870,9 @@ This is a super simple panel.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
 
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -884,7 +919,9 @@ This is a super simple panel.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -916,7 +953,9 @@ This is a super simple panel.
 </div>
 ";
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -995,7 +1034,9 @@ Another possibility would be to merge a word’s tree with a single large tree o
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion
@@ -1032,7 +1073,9 @@ Another possibility would be to merge a word’s tree with a single large tree o
 </div>
 ";
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
+            var options = new LavaTestRenderOptions() { Wildcards = new List<string> { "<<guid>>" } };
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, options );
         }
 
         #endregion

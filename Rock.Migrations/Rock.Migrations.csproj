@@ -61,45 +61,108 @@
     <Compile Include="..\Rock.Version\AssemblySharedInfo.cs">
       <Link>AssemblySharedInfo.cs</Link>
     </Compile>
-    <Compile Include="Migrations\202102171700486_UpdateFinancialTransactionAlertType.cs" />
-    <Compile Include="Migrations\202102171700486_UpdateFinancialTransactionAlertType.Designer.cs">
+    <Compile Include="Migrations\202104142217434_Metric_AutoPartitionOnPrimaryCampus.cs" />
+    <Compile Include="Migrations\202104142217434_Metric_AutoPartitionOnPrimaryCampus.Designer.cs">
+      <DependentUpon>202104142217434_Metric_AutoPartitionOnPrimaryCampus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104161249583_AddForeignCurrencySupport.cs" />
+    <Compile Include="Migrations\202104161249583_AddForeignCurrencySupport.Designer.cs">
+      <DependentUpon>202104161249583_AddForeignCurrencySupport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104161716420_Definedtype_EnableSecurityOnValues.cs" />
+    <Compile Include="Migrations\202104161716420_Definedtype_EnableSecurityOnValues.Designer.cs">
+      <DependentUpon>202104161716420_Definedtype_EnableSecurityOnValues.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104262212301_CheckinManagerPhase3.cs" />
+    <Compile Include="Migrations\202104262212301_CheckinManagerPhase3.Designer.cs">
+      <DependentUpon>202104262212301_CheckinManagerPhase3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104271544551_AddFinancialStatementTemplate.cs" />
+    <Compile Include="Migrations\202104271544551_AddFinancialStatementTemplate.Designer.cs">
+      <DependentUpon>202104271544551_AddFinancialStatementTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104271710211_Rollup_04271.cs" />
+    <Compile Include="Migrations\202104271710211_Rollup_04271.Designer.cs">
+      <DependentUpon>202104271710211_Rollup_04271.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104271748244_CodeGenerated_0427.cs" />
+    <Compile Include="Migrations\202104271748244_CodeGenerated_0427.Designer.cs">
+      <DependentUpon>202104271748244_CodeGenerated_0427.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104282103218_MediaElementModelChanges.cs" />
+    <Compile Include="Migrations\202104282103218_MediaElementModelChanges.Designer.cs">
+      <DependentUpon>202104282103218_MediaElementModelChanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104291818024_GroupSalutation.cs" />
+    <Compile Include="Migrations\202104291818024_GroupSalutation.Designer.cs">
+      <DependentUpon>202104291818024_GroupSalutation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104302057198_MediaElementModelChangesForWorkflow.cs" />
+    <Compile Include="Migrations\202104302057198_MediaElementModelChangesForWorkflow.Designer.cs">
+      <DependentUpon>202104302057198_MediaElementModelChangesForWorkflow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202105031946496_ClearPersistedDataStatistics.cs" />
+    <Compile Include="Migrations\202105031946496_ClearPersistedDataStatistics.Designer.cs">
+      <DependentUpon>202105031946496_ClearPersistedDataStatistics.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Version 12.0\Version 1.12.4\202104131841162_Rollup_0413.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.4\202104131841162_Rollup_0413.Designer.cs">
+      <DependentUpon>202104131841162_Rollup_0413.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202104012255129_AddMediaRelatedTable2.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202104012255129_AddMediaRelatedTable2.Designer.cs">
+      <DependentUpon>202104012255129_AddMediaRelatedTable2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102171700486_UpdateFinancialTransactionAlertType.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102171700486_UpdateFinancialTransactionAlertType.Designer.cs">
       <DependentUpon>202102171700486_UpdateFinancialTransactionAlertType.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202102242045089_CommunicationResponseAttachment.cs" />
-    <Compile Include="Migrations\202102242045089_CommunicationResponseAttachment.Designer.cs">
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102242045089_CommunicationResponseAttachment.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102242045089_CommunicationResponseAttachment.Designer.cs">
       <DependentUpon>202102242045089_CommunicationResponseAttachment.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202102261829140_UpdateIndexNames.cs" />
-    <Compile Include="Migrations\202102261829140_UpdateIndexNames.Designer.cs">
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102261829140_UpdateIndexNames.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102261829140_UpdateIndexNames.Designer.cs">
       <DependentUpon>202102261829140_UpdateIndexNames.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202103012333465_RegistrationSession.cs" />
-    <Compile Include="Migrations\202103012333465_RegistrationSession.Designer.cs">
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103012333465_RegistrationSession.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103012333465_RegistrationSession.Designer.cs">
       <DependentUpon>202103012333465_RegistrationSession.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202103021953495_Rollup_0302.cs" />
-    <Compile Include="Migrations\202103021953495_Rollup_0302.Designer.cs">
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103021953495_Rollup_0302.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103021953495_Rollup_0302.Designer.cs">
       <DependentUpon>202103021953495_Rollup_0302.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202103041650445_RegistrationSession-PropChanges.cs" />
-    <Compile Include="Migrations\202103041650445_RegistrationSession-PropChanges.Designer.cs">
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103041650445_RegistrationSession-PropChanges.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103041650445_RegistrationSession-PropChanges.Designer.cs">
       <DependentUpon>202103041650445_RegistrationSession-PropChanges.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\RockMigrationSQL.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>RockMigrationSQL.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202103172054126_Rollup_03171.cs" />
-    <Compile Include="Migrations\202103172054126_Rollup_03171.Designer.cs">
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103172054126_Rollup_03171.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103172054126_Rollup_03171.Designer.cs">
       <DependentUpon>202103172054126_Rollup_03171.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103251309028_AddMediaRelatedTable.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103251309028_AddMediaRelatedTable.Designer.cs">
+      <DependentUpon>202103251309028_AddMediaRelatedTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103252333087_Rollup_0325.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103252333087_Rollup_0325.Designer.cs">
+      <DependentUpon>202103252333087_Rollup_0325.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103261909295_GivingAttributes.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103261909295_GivingAttributes.Designer.cs">
+      <DependentUpon>202103261909295_GivingAttributes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103262119085_Rollup_0326.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202103262119085_Rollup_0326.Designer.cs">
+      <DependentUpon>202103262119085_Rollup_0326.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Version 12.0\Version 1.12.1\202102082138560_CleanMigrationHistory.cs" />
     <Compile Include="Migrations\Version 12.0\Version 1.12.1\202102082138560_CleanMigrationHistory.Designer.cs">
       <DependentUpon>202102082138560_CleanMigrationHistory.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Version 12.0\Version 1.12.2\202102162206327_Rollup_0216.cs" />
-    <Compile Include="Migrations\Version 12.0\Version 1.12.2\202102162206327_Rollup_0216.Designer.cs">
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102162206327_Rollup_0216.cs" />
+    <Compile Include="Migrations\Version 12.0\Version 1.12.3\202102162206327_Rollup_0216.Designer.cs">
       <DependentUpon>202102162206327_Rollup_0216.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Version 12.0\Version 1.12.1\202102032221004_Rollup_0203.cs" />
@@ -109,6 +172,11 @@
     <Compile Include="Migrations\Version 12.0\Version 1.12.1\202102011629370_CoverTheFees.cs" />
     <Compile Include="Migrations\Version 12.0\Version 1.12.1\202102011629370_CoverTheFees.Designer.cs">
       <DependentUpon>202102011629370_CoverTheFees.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\RockMigrationSQL.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RockMigrationSQL.resx</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Version 12.0\Version 1.12.1\202012091759168_Rollup_1209.cs" />
     <Compile Include="Migrations\Version 12.0\Version 1.12.1\202012091759168_Rollup_1209.Designer.cs">
@@ -387,31 +455,82 @@
     <Compile Include="SqlServerTypes\Loader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202102171700486_UpdateFinancialTransactionAlertType.resx">
+    <EmbeddedResource Include="Migrations\202104142217434_Metric_AutoPartitionOnPrimaryCampus.resx">
+      <DependentUpon>202104142217434_Metric_AutoPartitionOnPrimaryCampus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104161249583_AddForeignCurrencySupport.resx">
+      <DependentUpon>202104161249583_AddForeignCurrencySupport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104161716420_Definedtype_EnableSecurityOnValues.resx">
+      <DependentUpon>202104161716420_Definedtype_EnableSecurityOnValues.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104262212301_CheckinManagerPhase3.resx">
+      <DependentUpon>202104262212301_CheckinManagerPhase3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104271544551_AddFinancialStatementTemplate.resx">
+      <DependentUpon>202104271544551_AddFinancialStatementTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104271710211_Rollup_04271.resx">
+      <DependentUpon>202104271710211_Rollup_04271.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104271748244_CodeGenerated_0427.resx">
+      <DependentUpon>202104271748244_CodeGenerated_0427.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104282103218_MediaElementModelChanges.resx">
+      <DependentUpon>202104282103218_MediaElementModelChanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104291818024_GroupSalutation.resx">
+      <DependentUpon>202104291818024_GroupSalutation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104302057198_MediaElementModelChangesForWorkflow.resx">
+      <DependentUpon>202104302057198_MediaElementModelChangesForWorkflow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202105031946496_ClearPersistedDataStatistics.resx">
+      <DependentUpon>202105031946496_ClearPersistedDataStatistics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.4\202104131841162_Rollup_0413.resx">
+      <DependentUpon>202104131841162_Rollup_0413.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202104012255129_AddMediaRelatedTable2.resx">
+      <DependentUpon>202104012255129_AddMediaRelatedTable2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202102171700486_UpdateFinancialTransactionAlertType.resx">
       <DependentUpon>202102171700486_UpdateFinancialTransactionAlertType.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202102242045089_CommunicationResponseAttachment.resx">
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202102242045089_CommunicationResponseAttachment.resx">
       <DependentUpon>202102242045089_CommunicationResponseAttachment.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202102261829140_UpdateIndexNames.resx">
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202102261829140_UpdateIndexNames.resx">
       <DependentUpon>202102261829140_UpdateIndexNames.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202103012333465_RegistrationSession.resx">
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103012333465_RegistrationSession.resx">
       <DependentUpon>202103012333465_RegistrationSession.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202103021953495_Rollup_0302.resx">
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103021953495_Rollup_0302.resx">
       <DependentUpon>202103021953495_Rollup_0302.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202103041650445_RegistrationSession-PropChanges.resx">
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103041650445_RegistrationSession-PropChanges.resx">
       <DependentUpon>202103041650445_RegistrationSession-PropChanges.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202103172054126_Rollup_03171.resx">
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103172054126_Rollup_03171.resx">
       <DependentUpon>202103172054126_Rollup_03171.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103251309028_AddMediaRelatedTable.resx">
+      <DependentUpon>202103251309028_AddMediaRelatedTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103252333087_Rollup_0325.resx">
+      <DependentUpon>202103252333087_Rollup_0325.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103261909295_GivingAttributes.resx">
+      <DependentUpon>202103261909295_GivingAttributes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202103262119085_Rollup_0326.resx">
+      <DependentUpon>202103262119085_Rollup_0326.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.1\202102082138560_CleanMigrationHistory.resx">
       <DependentUpon>202102082138560_CleanMigrationHistory.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.2\202102162206327_Rollup_0216.resx">
+    <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.3\202102162206327_Rollup_0216.resx">
       <DependentUpon>202102162206327_Rollup_0216.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.1\202102032221004_Rollup_0203.resx">
@@ -644,6 +763,21 @@
       <Link>SqlServerTypes\x86\SqlServerSpatial110.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Migrations\202104291818024_GroupSalutation_spAnalytics_ETL_Family.sql">
+      <DependentUpon>202104291818024_GroupSalutation.cs</DependentUpon>
+    </Content>
+    <Content Include="Migrations\202104291818024_GroupSalutation_spFinance_ContributionStatementQuery.sql">
+      <DependentUpon>202104291818024_GroupSalutation.cs</DependentUpon>
+    </Content>
+    <Content Include="Migrations\202104291818024_GroupSalutation_ufnCrm_GetFamilyTitle.sql">
+      <DependentUpon>202104291818024_GroupSalutation.cs</DependentUpon>
+    </Content>
+    <Content Include="Migrations\202104291818024_GroupSalutation_ufnCrm_GetFamilyTitleFromGivingId.sql">
+      <DependentUpon>202104291818024_GroupSalutation.cs</DependentUpon>
+    </Content>
+    <Content Include="Migrations\202104291818024_GroupSalutation_ufnCrm_GetFamilyTitleIncludeInactive.sql">
+      <DependentUpon>202104291818024_GroupSalutation.cs</DependentUpon>
+    </Content>
     <Content Include="Migrations\Version 12.0\Version 1.12.0\202008272036178_AddDocumentsToPersonMerge_spCrm_PersonMerge.sql">
       <DependentUpon>202008272036178_AddDocumentsToPersonMerge.cs</DependentUpon>
     </Content>
@@ -665,8 +799,11 @@
     <Content Include="Migrations\Version 12.0\Version 1.12.1\202102032221004_Rollup_0203_KPIStyling.sql">
       <DependentUpon>202102032221004_Rollup_0203.cs</DependentUpon>
     </Content>
-    <Content Include="Migrations\Version 12.0\Version 1.12.2\202102162206327_Rollup_0216_KPIUpdate.sql">
+    <Content Include="Migrations\Version 12.0\Version 1.12.3\202102162206327_Rollup_0216_KPIUpdate.sql">
       <DependentUpon>202102162206327_Rollup_0216.cs</DependentUpon>
+    </Content>
+    <Content Include="Migrations\Version 12.0\Version 1.12.4\202104131841162_Rollup_0413_kpiupdate.sql">
+      <DependentUpon>202104131841162_Rollup_0413.cs</DependentUpon>
     </Content>
     <Content Include="Migrations\CreateDatabase\201311251734059_CreateDatabase.sql">
       <DependentUpon>201311251734059_CreateDatabase.cs</DependentUpon>
@@ -691,7 +828,7 @@
       <Project>{00EDCB8D-EF33-459C-AD62-02876BD24DFF}</Project>
       <Name>DotLiquid</Name>
     </ProjectReference>
-	<ProjectReference Include="..\Rock.Lava.Shared\Rock.Lava.Shared.csproj">
+    <ProjectReference Include="..\Rock.Lava.Shared\Rock.Lava.Shared.csproj">
       <Project>{8820cd93-70ee-496d-b17b-0c4c68dd4957}</Project>
       <Name>Rock.Lava.Shared</Name>
     </ProjectReference>

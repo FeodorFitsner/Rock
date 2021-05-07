@@ -31,7 +31,7 @@ namespace Rock.Lava.Blocks
     /// SELECT [FirstName], [LastName] FROM [Person]
     /// {% endsql %}
     /// </summary>
-    public class SqlBlock : LavaBlockBase
+    public class SqlBlock : LavaBlockBase, ILavaSecured
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 
@@ -62,7 +62,6 @@ namespace Rock.Lava.Blocks
             if ( !this.IsAuthorized( context ) )
             {
                 result.Write( string.Format( LavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
-                base.OnRender( context, result );
                 return;
             }
 
@@ -148,5 +147,17 @@ namespace Rock.Lava.Blocks
             return parms;
         }
 
+        #region ILavaSecured
+
+        /// <inheritdoc/>
+        public string RequiredPermissionKey
+        {
+            get
+            {
+                return "Sql";
+            }
+        }
+
+        #endregion
     }
 }

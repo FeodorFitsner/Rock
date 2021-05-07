@@ -28,11 +28,6 @@ namespace Rock.Tests.Integration.Lava
         [TestMethod]
         public void Shortcode_WithMergeFieldAsParameter_CorrectlyResolvesParameters()
         {
-            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.RockLiquid ) )
-            {
-                return;
-            }
-
             var shortcodeTemplate = @"
 Font Name: {{ fontname }}
 Font Size: {{ fontsize }}
@@ -45,8 +40,6 @@ Font Bold: {{ fontbold }}
             shortcodeDefinition.ElementType = LavaShortcodeTypeSpecifier.Block;
             shortcodeDefinition.TemplateMarkup = shortcodeTemplate;
             shortcodeDefinition.Name = "shortcodetest";
-
-            TestHelper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
 
             var input = @"
 {[ shortcodetest fontname:'Arial' fontsize:'{{ fontsize }}' fontbold:'true' ]}
@@ -61,9 +54,16 @@ Font Bold: true
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-             var context = new LavaDataDictionary() { { "fontsize", 99 }  };
+            var context = new LavaDataDictionary() { { "fontsize", 99 }  };
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, context, ignoreWhiteSpace: true, wildCard: "<?>" );
+            var options = new LavaTestRenderOptions { MergeFields = context };
+
+            TestHelper.AssertAction( ( engine ) =>
+            {
+                engine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
+
+                TestHelper.AssertTemplateOutput( engine.EngineType, expectedOutput, input, options );
+            } );
         }
 
         #region Bootstrap Alert
@@ -101,7 +101,7 @@ Schedule Live: {{ IsLive }}
 ScheduleName:Saturday4:30pm<br>ScheduleLive:true<br>
 ";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input );
         }
 
         [TestMethod]
@@ -115,7 +115,7 @@ Schedule Active = {{isScheduleActive}}
 ";
             var expectedOutput = @"Schedule Active = true";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, context: null, ignoreWhiteSpace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input );
         }
 
         #endregion

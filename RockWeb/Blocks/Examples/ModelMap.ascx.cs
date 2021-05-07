@@ -297,7 +297,7 @@ namespace RockWeb.Blocks.Examples
                 var category = EntityCategories.Where( c => c.Guid.Equals( categoryGuid ) ).FirstOrDefault();
                 if ( category != null )
                 {
-                    lCategoryName.Text = category.Name + " Models";
+                    lCategoryName.Text = category.Name.SplitCase() + " Models";
                     pnlModels.Visible = true;
 
                     entityTypeList = category
@@ -453,7 +453,7 @@ namespace RockWeb.Blocks.Examples
             {
                 if ( aClass.Properties.Any() )
                 {
-                    sb.AppendLine( "<h4>Properties</h4><ul class='list-unstyled'>" );
+                    sb.AppendLine( "<h5 class='font-weight-normal'>Properties</h5><table class='table table-properties'>" );
                     foreach ( var property in aClass.Properties.OrderBy( p => p.Name ) )
                     {
                         bool? isRequired = gfSettings.GetUserPreference( "IsRequired" ).AsBooleanOrNull();
@@ -476,21 +476,23 @@ namespace RockWeb.Blocks.Examples
                         }
 
                         sb.AppendFormat(
-                            "<li data-id='p{0}'><strong>{8}<tt>{1}</tt></strong>{3}{4}{5}{9}{2}{10}{6}</li>{7}",
+                            "<tr data-id='p{0}' {11}><td class='d-block d-sm-table-cell'>{8}<tt class='cursor-default font-weight-bold {3}' title='{6}'>{1}</tt> {4}{5}</td><td class='d-block d-sm-table-cell'>{9}{2}{10}</td></tr>{7}",
                             property.Id, // 0
                             HttpUtility.HtmlEncode( property.Name ), // 1
-                            ( property.Comment != null && !string.IsNullOrWhiteSpace( property.Comment.Summary ) ) ? " - " + property.Comment.Summary : string.Empty, // 2
-                            property.Required ? " <strong class='text-danger'>*</strong> " : string.Empty, // 3
-                            property.IsLavaInclude ? " <i class='fa fa-bolt fa-fw text-warning'></i> " : string.Empty, // 4
+                            ( property.Comment != null && !string.IsNullOrWhiteSpace( property.Comment.Summary ) ) ? " " + property.Comment.Summary : string.Empty, // 2
+                            property.Required ? "required-indicator" : string.Empty, // 3
+                            property.IsLavaInclude ? " <i class='fa fa-bolt fa-fw text-warning unselectable'></i> " : string.Empty, // 4
                             string.Empty, // 5
-                            property.IsInherited ? " (inherited)" : string.Empty, // 6
+                            property.IsInherited ? "inherited" : string.Empty, // 6
                             Environment.NewLine, // 7
-                            property.NotMapped || property.IsVirtual ? "<i class='fa fa-square-o fa-fw'></i> " : "<i class='fa fa-database fa-fw'></i> ", // 8
-                            property.IsObsolete ? "<i class='fa fa-ban fa-fw text-danger' title='no longer supported'></i> <i>" + property.ObsoleteMessage + " </i> " : string.Empty, // 9
-                            ( property.IsEnum || property.IsDefinedValue ) && property.KeyValues != null ? GetStringFromKeyValues( property.KeyValues ) : string.Empty /*10*/ );
+                            property.NotMapped || property.IsVirtual ? "<i class='fa fa-square fa-fw o-20'></i> " : "<i class='fa fa-database fa-fw'></i> ", // 8
+                            property.IsObsolete ? "<i class='fa fa-ban fa-fw text-danger' title='no longer supported'></i> <span class='small text-danger'>" + property.ObsoleteMessage + " </span> " : string.Empty, // 9
+                            ( property.IsEnum || property.IsDefinedValue ) && property.KeyValues != null ? GetStringFromKeyValues( property.KeyValues ) : string.Empty, /*10*/
+                            property.IsObsolete ? "class='o-50' title='Obsolete'" : "class=''"
+                            );
                     }
 
-                    sb.AppendLine( "</ul>" );
+                    sb.AppendLine( "</table>" );
                 }
 
                 if ( aClass.Methods.Any() )
@@ -499,13 +501,13 @@ namespace RockWeb.Blocks.Examples
 
                     if ( aClass.Methods.Where( m => m.IsInherited == false ).Count() == 0 )
                     {
-                        sb.AppendLine( "<small class='text-muted'><i>all inherited</i></small>" );
+                        sb.AppendLine( "<li class='js-model hidden'><small class='text-muted'><i>all inherited</i></small></li>" );
                     }
 
                     foreach ( var method in aClass.Methods.OrderBy( m => m.Name ) )
                     {
                         sb.AppendFormat(
-                            "<li data-id='m{0}' class='{3}'><strong><tt>{1}</tt></strong> {2}{4} {6}</li>{5}",
+                            "<li data-id='m{0}' class='{3}'><tt class='font-weight-bold'>{1}</tt> {2}{4} {6}</li>{5}",
                             method.Id,
                             HttpUtility.HtmlEncode( method.Signature ),
                             ( method.Comment != null && !string.IsNullOrWhiteSpace( method.Comment.Summary ) ) ? " - " + method.Comment.Summary : string.Empty,
@@ -549,7 +551,7 @@ namespace RockWeb.Blocks.Examples
         }
 
         /// <summary>
-        /// Gets the comments from the data in the assembly's XML file for the 
+        /// Gets the comments from the data in the assembly's XML file for the
         /// given member object.
         /// </summary>
         /// <param name="p">The MemberInfo instance.</param>
@@ -601,7 +603,7 @@ namespace RockWeb.Blocks.Examples
         }
 
         /// <summary>
-        /// Gets the comments from the data in the assembly's XML file for the 
+        /// Gets the comments from the data in the assembly's XML file for the
         /// given member object.
         /// </summary>
         /// <param name="p">The MemberInfo instance.</param>
@@ -631,27 +633,34 @@ namespace RockWeb.Blocks.Examples
         }
 
         /// <summary>
-        /// Makes the summary HTML; converting any type/class cref (ex. <see cref="T:Rock.Model.Campus" />) 
+        /// Makes the summary HTML; converting any type/class cref (ex. <see cref="T:Rock.Model.Campus" />)
         /// references to HTML links (ex <a href="#Campus">Campus</a>)
         /// </summary>
         /// <param name="innerXml">The inner XML.</param>
         /// <returns></returns>
-        /// 
+        ///
         private string MakeSummaryHtml( string innerXml )
         {
             innerXml = System.Text.RegularExpressions.Regex.Replace( innerXml, @"\s+", " " );
-            var match = System.Text.RegularExpressions.Regex.Match( innerXml, @"<see cref=""T:(.*)"" />" );
-            if ( match.Success )
+            var match = System.Text.RegularExpressions.Regex.Match( innerXml, @"<see cref=""T:(.*?)""(?: />|>(.*)</see>)" );
+            while ( match.Success )
             {
+                var updatedValue = match.Value;
+                System.Text.RegularExpressions.Regex.Match( match.Value, @"<see cref=""T:(.*?)""(?: />|>(.*)</see>)" );
+
                 var entityType = EntityTypeCache.Get( match.Groups[1].Value );
                 if ( entityType != null )
                 {
-                    innerXml = System.Text.RegularExpressions.Regex.Replace( innerXml, @"<see cref=""T:(.*)\.([^.]*)"" />", string.Format( "<a href=\"?EntityType={0}\">$2</a>", entityType.Id ) );
+                    updatedValue = System.Text.RegularExpressions.Regex.Replace( updatedValue, @"<see cref=""T:(.*)\.([^.]*)"" />", string.Format( "<a href=\"?EntityType={0}\">$2</a>", entityType.Id ) );
+                    updatedValue = System.Text.RegularExpressions.Regex.Replace( updatedValue, @"<see cref=""T:(.*)\.([^.]*)"">(.*)</see>", string.Format( "<a href=\"?EntityType={0}\" title=\"$2\">$3</a>", entityType.Id ) );
                 }
                 else
                 {
-                    innerXml = System.Text.RegularExpressions.Regex.Replace( innerXml, @"<see cref=""T:(.*)\.([^.]*)"" />", "<a href=\"#$2\">$2</a>" );
+                    updatedValue = System.Text.RegularExpressions.Regex.Replace( updatedValue, @"<see cref=""T:(.*)\.([^.]*)"" />", "<a href=\"#$2\">$2</a>" );
                 }
+
+                innerXml = System.Text.RegularExpressions.Regex.Replace( innerXml, match.Value, updatedValue );
+                match = match.NextMatch();
             }
             return innerXml;
         }
@@ -686,19 +695,23 @@ namespace RockWeb.Blocks.Examples
 
             foreach ( var keyValue in keyValues )
             {
-                if ( value.IsNotNullOrWhiteSpace() )
-                {
-                    value += ", ";
-                }
+                value += "<tr><td class='w-1 text-nowrap'>";
+
 
                 value += keyValue.Key;
+                value += "</td>";
                 if ( keyValue.Value.IsNotNullOrWhiteSpace() )
                 {
-                    value += " - " + keyValue.Value;
+                    value += "<td>" + keyValue.Value + "</td>";
                 }
+                else
+                {
+                    value += "<td></td>";
+                }
+                value += "</tr>";
             }
 
-            return string.Format( "({0})", value );
+            return string.Format( "<br/><span class='js-show-values btn btn-default btn-xs mt-2 mb-3'><span>Show Values</span> <i class='fa fa-chevron-down'></i></span><div class='js-value-table' style='display:none'><table class='table table-condensed w-75 mb-3'>{0}</table></div>", value );
         }
 
         #endregion

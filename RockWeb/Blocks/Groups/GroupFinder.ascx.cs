@@ -81,7 +81,7 @@ namespace RockWeb.Blocks.Groups
 </div>
 
 <div class='margin-v-sm'>
-{% if Location.FormattedHtmlAddress && Location.FormattedHtmlAddress != '' %}
+{% if Location.FormattedHtmlAddress and Location.FormattedHtmlAddress != '' %}
 	{{ Location.FormattedHtmlAddress }}
 {% endif %}
 </div>
@@ -1351,7 +1351,9 @@ namespace RockWeb.Blocks.Groups
             if ( dvcMapStyle != null )
             {
                 styleCode = dvcMapStyle.GetAttributeValue( "DynamicMapStyle" );
-                markerColors = dvcMapStyle.GetAttributeValue( "Colors" )
+
+                var colorsSetting = dvcMapStyle.GetAttributeValue( "Colors" ) ?? string.Empty;
+                markerColors = colorsSetting
                     .Split( new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries )
                     .ToList();
                 markerColors.ForEach( c => c = c.Replace( "#", string.Empty ) );

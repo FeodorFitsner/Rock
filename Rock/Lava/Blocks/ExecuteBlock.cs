@@ -27,7 +27,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// Renders a Lava template as a C# function with a string return value, executes the function and returns the output.
     /// </summary>
-    public class ExecuteBlock : LavaBlockBase
+    public class ExecuteBlock : LavaBlockBase, ILavaSecured
     {
         private RuntimeType _runtimeType = RuntimeType.SCRIPT;
         private List<string> _imports = new List<string>();
@@ -75,17 +75,14 @@ namespace Rock.Lava.Blocks
             if ( !this.IsAuthorized( context ) )
             {
                 result.Write( string.Format( LavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
-                base.OnRender( context, result );
                 return;
             }
-
-            string userScript = @"return ""Watson, can you hear me?"";"; // initial script here was just for testing
 
             using ( TextWriter temp = new StringWriter() )
             {
                 base.OnRender( context, temp );
 
-                userScript = temp.ToString();
+                var userScript = temp.ToString();
 
                 if ( _runtimeType == RuntimeType.SCRIPT )
                 {
@@ -138,12 +135,6 @@ namespace Rock.Lava.Blocks
             }
         }
 
-        //public override void OnParse( List<string> tokens, out List<object> nodes )
-        //{
-        //    // No action required.
-        //    nodes = null;
-        //}
-
         /// <summary>
         /// Cleans the input.
         /// </summary>
@@ -178,6 +169,19 @@ namespace Rock.Lava.Blocks
             }
             return parms;
         }
+
+        #region ILavaSecured
+
+        /// <inheritdoc/>
+        public string RequiredPermissionKey
+        {
+            get
+            {
+                return "Execute";
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>
